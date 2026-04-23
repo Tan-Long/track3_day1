@@ -8,4 +8,7 @@ env/
 .env
 .pytest_cache/
 outputs/
+!outputs/**/
+!outputs/**/report.md
+!outputs/**/report.json
 .DS_Store
