@@ -1,15 +1,25 @@
 from __future__ import annotations
 import json
+import os
 import re
 import time
+from dotenv import load_dotenv
 from .schemas import QAExample, JudgeResult, ReflectionEntry
 from .prompts import ACTOR_SYSTEM, EVALUATOR_SYSTEM, REFLECTOR_SYSTEM
 from .utils import normalize_answer
 import ollama
 
-MODEL = "qwen2.5:3b"
+load_dotenv()
+
+MODEL = "gemma3:4b"
 FAILURE_MODE_BY_QID: dict[str, str] = {}
 MAX_RETRIES = 3
+
+_api_key = os.environ.get("OLLAMA_API_KEY", "")
+_client = ollama.Client(
+    host="https://api.ollama.com",
+    headers={"Authorization": f"Bearer {_api_key}"},
+)
 
 
 def _chat(system: str, user: str, use_json_format: bool = False) -> tuple[str, int, int]:
@@ -20,7 +30,7 @@ def _chat(system: str, user: str, use_json_format: bool = False) -> tuple[str, i
     ]}
     if use_json_format:
         kwargs["format"] = "json"
-    response = ollama.chat(**kwargs)
+    response = _client.chat(**kwargs)
     latency_ms = int((time.time() - start) * 1000)
     content = response.get("message", {}).get("content", "")
     prompt_tokens = response.get("prompt_eval_count", 0)
