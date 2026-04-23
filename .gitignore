@@ -7,7 +7,7 @@ ENV/
 env/
 .env
 .pytest_cache/
-outputs/
+outputs/**
 !outputs/**/
 !outputs/**/report.md
 !outputs/**/report.json
